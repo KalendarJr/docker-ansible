@@ -10,7 +10,7 @@ on:
 env:
   IMAGE_NAME: ansible
   IMAGE_TAG: latest
-  REGISTRY_NAME: docker.eximple.ru
+  REGISTRY_NAME: ghcr.io/${{ github.repository_owner }}
   REGISTRY_LOGIN: ${{ secrets.NEXUS_LOGIN }}
   REGISTRY_PASS: ${{ secrets.NEXUS_PASS }}
   DEPLOY_TO_REGISTRY: 'true'
