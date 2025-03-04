@@ -28,10 +28,8 @@ jobs:
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
       - name: Build Docker image
-        run: |
-          docker build -t $REGISTRY_NAME/$IMAGE_NAME:$IMAGE_TAG .
+        run: docker build -t ghcr.io/${{ github.repository_owner }}/ansible:latest .
 
       - name: Push Docker image
         if: env.DEPLOY_TO_REGISTRY == 'true'
-        run: |
-          docker push $REGISTRY_NAME/$IMAGE_NAME:$IMAGE_TAG
+        run: docker push ghcr.io/${{ github.repository_owner }}/ansible:latest
