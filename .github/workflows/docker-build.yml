@@ -10,9 +10,6 @@ on:
 env:
   IMAGE_NAME: ansible
   IMAGE_TAG: latest
-  REGISTRY_NAME: ghcr.io/${{ github.repository_owner }}
-  REGISTRY_LOGIN: ${{ secrets.NEXUS_LOGIN }}
-  REGISTRY_PASS: ${{ secrets.NEXUS_PASS }}
   DEPLOY_TO_REGISTRY: 'true'
 
 jobs:
@@ -23,13 +20,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Convert repository owner to lowercase
+        run: echo "REPO_OWNER=$(echo ${{ github.repository_owner }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
       - name: Log in to Docker Registry
         if: env.DEPLOY_TO_REGISTRY == 'true'
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
       - name: Build Docker image
-        run: docker build -t ghcr.io/${{ github.repository_owner }}/ansible:latest .
+        run: docker build -t ghcr.io/${{ env.REPO_OWNER }}/ansible:latest .
 
       - name: Push Docker image
         if: env.DEPLOY_TO_REGISTRY == 'true'
-        run: docker push ghcr.io/${{ github.repository_owner }}/ansible:latest
+        run: docker push ghcr.io/${{ env.REPO_OWNER }}/ansible:latest
