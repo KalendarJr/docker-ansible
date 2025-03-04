@@ -1,0 +1,37 @@
+name: Docker Build and Push
+
+on:
+  push:
+    branches:
+      - main
+  release:
+    types: [published]
+
+env:
+  IMAGE_NAME: ansible
+  IMAGE_TAG: latest
+  REGISTRY_NAME: docker.eximple.ru
+  REGISTRY_LOGIN: ${{ secrets.NEXUS_LOGIN }}
+  REGISTRY_PASS: ${{ secrets.NEXUS_PASS }}
+  DEPLOY_TO_REGISTRY: 'true'
+
+jobs:
+  build:
+    name: Build Docker Image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to Docker Registry
+        if: env.DEPLOY_TO_REGISTRY == 'true'
+        run: echo "$REGISTRY_PASS" | docker login $REGISTRY_NAME -u "$REGISTRY_LOGIN" --password-stdin
+
+      - name: Build Docker image
+        run: |
+          docker build -t $REGISTRY_NAME/$IMAGE_NAME:$IMAGE_TAG .
+
+      - name: Push Docker image
+        if: env.DEPLOY_TO_REGISTRY == 'true'
+        run: |
+          docker push $REGISTRY_NAME/$IMAGE_NAME:$IMAGE_TAG
