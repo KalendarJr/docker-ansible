@@ -25,7 +25,7 @@ jobs:
 
       - name: Log in to Docker Registry
         if: env.DEPLOY_TO_REGISTRY == 'true'
-        run: echo "$REGISTRY_PASS" | docker login $REGISTRY_NAME -u "$REGISTRY_LOGIN" --password-stdin
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
 
       - name: Build Docker image
         run: |
